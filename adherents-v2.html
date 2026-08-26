@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chèques Cadeaux — Commerçants adhérents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0d1b2a;
+  --navy2:#162535;
+  --accent:#2a7a50;
+  --accent-l:#e6f4ed;
+  --accent2:#b8720f;
+  --bg:#f0efe9;
+  --surface:#ffffff;
+  --text:#181814;
+  --muted:#787870;
+  --border:rgba(0,0,0,0.07);
+  --shadow-sm:0 1px 8px -2px rgba(0,0,0,0.07),0 0 0 1px rgba(0,0,0,0.04);
+  --shadow:0 4px 20px -6px rgba(0,0,0,0.10),0 0 0 1px rgba(0,0,0,0.04);
+}
+
+body{
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── HERO ── */
+.hero{
+  background:var(--navy);
+  padding:2.5rem 1.25rem 2rem;
+  position:relative;overflow:hidden;
+}
+.hero-stripe{
+  position:absolute;top:0;right:0;width:5px;height:100%;
+  background:linear-gradient(180deg,var(--accent2) 0%,var(--accent) 100%);
+}
+.hero-grain{
+  position:absolute;inset:0;opacity:.04;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-size:0.67rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--accent2);margin-bottom:1rem;
+}
+.hero-eyebrow span{
+  display:inline-block;width:18px;height:1.5px;background:var(--accent2);
+  border-radius:2px;
+}
+.hero-title{
+  font-size:clamp(1.7rem,6vw,2.6rem);font-weight:800;
+  letter-spacing:-0.04em;line-height:1.02;color:#fff;margin-bottom:0.5rem;
+}
+.hero-title em{color:var(--accent2);font-style:normal}
+.hero-sub{
+  font-size:0.83rem;color:rgba(255,255,255,0.45);
+  line-height:1.6;font-weight:400;
+}
+.hero-count{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  margin-top:1.25rem;background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.1);border-radius:2rem;
+  padding:0.45rem 0.9rem;
+}
+.hero-count-num{font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.hero-count-lbl{font-size:0.72rem;color:rgba(255,255,255,0.45);font-weight:500}
+.hero-notice{
+  display:flex;align-items:flex-start;gap:0.5rem;
+  margin-top:1rem;
+  font-size:0.73rem;color:rgba(255,255,255,0.35);line-height:1.5;
+}
+.hero-notice svg{flex-shrink:0;margin-top:1px;opacity:.6}
+
+/* ── TOP BAR (sticky compact) ── */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  background:rgba(240,239,233,0.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0.65rem 1.25rem;
+  display:flex;align-items:center;gap:0.6rem;
+  transition:box-shadow .2s;
+}
+.topbar.scrolled{box-shadow:0 4px 16px -4px rgba(0,0,0,0.1)}
+
+.search-pill{
+  flex:1;display:flex;align-items:center;gap:0.45rem;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:2rem;padding:0.45rem 0.85rem;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-pill:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(42,122,80,0.1)}
+.search-pill svg{color:var(--muted);flex-shrink:0}
+.search-pill input{
+  border:none;background:transparent;font-family:inherit;
+  font-size:0.83rem;color:var(--text);outline:none;width:100%;
+}
+.search-pill input::placeholder{color:var(--muted)}
+
+.filter-btn{
+  display:flex;align-items:center;gap:0.35rem;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:2rem;padding:0.45rem 0.85rem;
+  font-family:inherit;font-size:0.78rem;font-weight:600;
+  color:var(--text);cursor:pointer;white-space:nowrap;
+  transition:all .15s;flex-shrink:0;
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.has-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.filter-btn .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.8);display:none;
+}
+.filter-btn.has-active .dot{display:block}
+
+/* ── DRAWER ── */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(13,27,42,0.5);
+  z-index:40;opacity:0;pointer-events:none;
+  transition:opacity .25s;
+  backdrop-filter:blur(2px);
+}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+
+.drawer{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:var(--surface);
+  border-radius:1.5rem 1.5rem 0 0;
+  padding:0 1.25rem 2rem;
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(0.16,1,0.3,1);
+  max-height:85dvh;overflow-y:auto;
+}
+.drawer.open{transform:translateY(0)}
+
+.drawer-handle{
+  width:36px;height:4px;background:rgba(0,0,0,0.12);
+  border-radius:2px;margin:0.75rem auto 1.25rem;
+}
+.drawer-title{
+  font-size:0.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--muted);margin-bottom:0.75rem;
+}
+.drawer-section{margin-bottom:1.25rem}
+
+.pills-wrap{display:flex;flex-wrap:wrap;gap:0.4rem}
+.dpill{
+  padding:0.42rem 0.8rem;border-radius:2rem;
+  border:1.5px solid var(--border);background:var(--bg);
+  font-family:inherit;font-size:0.78rem;font-weight:600;
+  cursor:pointer;color:var(--muted);transition:all .15s;
+  white-space:nowrap;
+}
+.dpill:hover{border-color:var(--accent);color:var(--accent)}
+.dpill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dpill.active.ville{background:var(--navy);border-color:var(--navy)}
+.dpill-cnt{
+  font-size:0.66rem;font-weight:700;
+  background:rgba(0,0,0,0.1);color:inherit;
+  padding:0.05rem 0.32rem;border-radius:1rem;
+  margin-left:0.2rem;
+}
+.dpill.active .dpill-cnt{background:rgba(255,255,255,0.25)}
+
+.drawer-actions{
+  display:flex;gap:0.5rem;padding-top:0.75rem;
+  border-top:1px solid var(--border);margin-top:0.5rem;
+}
+.btn-reset{
+  flex:1;padding:0.65rem;border-radius:1rem;
+  border:1.5px solid var(--border);background:transparent;
+  font-family:inherit;font-size:0.83rem;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.btn-reset:hover{border-color:var(--text);color:var(--text)}
+.btn-apply{
+  flex:2;padding:0.65rem;border-radius:1rem;
+  border:none;background:var(--accent);
+  font-family:inherit;font-size:0.83rem;font-weight:700;
+  color:#fff;cursor:pointer;transition:opacity .15s;
+}
+.btn-apply:hover{opacity:.88}
+
+/* ── CONTENT ── */
+.content{max-width:640px;margin:0 auto;padding:1rem 1.25rem 5rem}
+
+.results-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1rem;
+}
+.results-lbl{
+  font-size:0.73rem;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.07em;
+}
+.results-lbl strong{color:var(--accent)}
+.sort-btn{
+  font-family:inherit;font-size:0.73rem;font-weight:600;
+  color:var(--muted);background:none;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:0.3rem;
+}
+
+/* Cat group */
+.cat-group{margin-bottom:1.5rem;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.cat-header{
+  display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;
+  padding:0 0.1rem;
+}
+.cat-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.cat-lbl{
+  font-size:0.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.09em;color:var(--muted);
+}
+.cat-n{
+  margin-left:auto;font-size:0.68rem;font-weight:600;
+  color:var(--muted);background:rgba(0,0,0,0.06);
+  padding:0.08rem 0.4rem;border-radius:1rem;
+}
+
+/* Cards */
+.cards{display:flex;flex-direction:column;gap:0.4rem}
+.card{
+  background:var(--surface);
+  border-radius:0.9rem;
+  padding:0.85rem 1rem;
+  box-shadow:var(--shadow-sm);
+  display:flex;align-items:center;gap:0.75rem;
+  border-left:3px solid transparent;
+  transition:transform .15s,box-shadow .15s;
+  animation:fadeUp .25s ease both;
+}
+.card:hover{
+  transform:translateY(-1px);
+  box-shadow:var(--shadow);
+}
+.card-body{flex:1;min-width:0}
+.card-name{
+  font-size:0.9rem;font-weight:700;letter-spacing:-0.02em;
+  color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:0.12rem;
+}
+.card-metier{
+  font-size:0.73rem;font-weight:500;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-ville{
+  font-size:0.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.06em;padding:0.2rem 0.5rem;border-radius:1rem;
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* Couleurs ville */
+.vt-montaigu{background:#e8f4ee;color:#1f6b3a}
+.vt-bouffere{background:#e8eef8;color:#1f3d6b}
+.vt-stgeorges{background:#f8ebe8;color:#6b2a1f}
+.vt-sthilaire{background:#f4f0e8;color:#5a4a1f}
+.vt-laguyonniere{background:#f0e8f4;color:#4a1f6b}
+
+/* Couleurs catégories */
+.ac-beaute{border-left-color:#d4568a}
+.ac-gastro{border-left-color:#d4732a}
+.ac-distrib{border-left-color:#2a5fa0}
+.ac-loisirs{border-left-color:#7a4aaa}
+.ac-maison{border-left-color:#3a8040}
+.ac-mode{border-left-color:#c04a1a}
+.ac-services{border-left-color:#888}
+
+.dot-beaute{background:#d4568a}
+.dot-gastro{background:#d4732a}
+.dot-distrib{background:#2a5fa0}
+.dot-loisirs{background:#7a4aaa}
+.dot-maison{background:#3a8040}
+.dot-mode{background:#c04a1a}
+.dot-services{background:#888}
+
+/* No results */
+.empty{
+  text-align:center;padding:4rem 1rem;
+  display:none;
+}
+.empty-icon{
+  width:48px;height:48px;border-radius:50%;background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 0.75rem;box-shadow:var(--shadow-sm);color:var(--muted);
+}
+.empty p{font-size:0.85rem;color:var(--muted)}
+.empty strong{display:block;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.25rem}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-stripe"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-eyebrow"><span></span>Terres de Montaigu · Chèques Cadeaux</div>
+  <div class="hero-title">Où dépenser<br>mon chèque <em>cadeau</em>&nbsp;?</div>
+  <div class="hero-sub">Tous les commerces qui acceptent les chèques cadeaux sur le territoire.</div>
+  <div class="hero-count">
+    <div class="hero-count-num">97</div>
+    <div class="hero-count-lbl">commerçants adhérents</div>
+  </div>
+  <div class="hero-notice">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    Chaque commerçant peut limiter l'utilisation des chèques (ex : hors soldes). Se renseigner directement.
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar" id="topbar">
+  <div class="search-pill">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Rechercher un commerce…" oninput="render()">
+  </div>
+  <button class="filter-btn" id="filter-btn" onclick="openDrawer()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Filtres
+    <div class="dot"></div>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="results-bar">
+    <div class="results-lbl" id="count-lbl"></div>
+  </div>
+  <div id="list"></div>
+  <div class="empty" id="empty">
+    <div class="empty-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <strong>Aucun résultat</strong>
+    <p>Essayez d'autres mots-clés ou modifiez les filtres.</p>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<!-- DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+
+  <div class="drawer-section">
+    <div class="drawer-title">Catégorie</div>
+    <div class="pills-wrap" id="d-cats"></div>
+  </div>
+
+  <div class="drawer-section">
+    <div class="drawer-title">Ville</div>
+    <div class="pills-wrap" id="d-villes"></div>
+  </div>
+
+  <div class="drawer-actions">
+    <button class="btn-reset" onclick="resetFilters()">Réinitialiser</button>
+    <button class="btn-apply" id="btn-apply" onclick="closeDrawer()">Voir les résultats</button>
+  </div>
+</div>
+
+<script id="d-raw" type="application/json">
+[{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Arborigine","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Art Linea","metier":"Coiffure","ville":"ST GEORGES DE MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Atelier Rosemary","metier":"Herboriste","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Azyena","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Bellavida","metier":"Beauté","ville":"BOUFFERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Bettyssima","metier":"Beauté","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Bulle de Bien Être","metier":"Beauté","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Christy Coiffure","metier":"Coiffure","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Fox Pharma","metier":"Pharmacie","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Infinibeauté","metier":"Beauté","ville":"BOUFFERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Intermède / A Line Hair","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"L'Instant Zen","metier":"Beauté","ville":"ST GEORGES DE MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Le Coiffeur","metier":"Coiffure","ville":"BOUFFERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Linea Valle","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Mademoiselle Georges","metier":"Coiffure / Beauté / Vêtements","ville":"ST GEORGES DE MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Lou Color","metier":"Coiffure","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Nat Évasion","metier":"Beauté","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Nocibé Boufféré","metier":"Beauté","ville":"BOUFFERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Nocibé Montaigu","metier":"Beauté","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Pharmacie Brieau","metier":"Pharmacie","ville":"BOUFFERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Pharmacie des Jardins","metier":"Pharmacie","ville":"ST HILAIRE DE LOULAY"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Pharmacie des Maines","metier":"Pharmacie","ville":"ST GEORGES DE MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Pharmacie Gaborieau","metier":"Pharmacie","ville":"LA GUYONNIERE"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Pharmacie Hachet-Raymond","metier":"Pharmacie","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Solène C - O Salon","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"St Algue","metier":"Coiffure","ville":"MONTAIGU"},{"cat":"DETENTE, SOINS ET BEAUTE","nom":"Studio CL","metier":"Beauté","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"5 Bis","metier":"Restaurant","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"Biocoop La Barillère","metier":"Épicerie bio","ville":"ST HILAIRE DE LOULAY"},{"cat":"GASTRONOMIE","nom":"Biocoop Montaigu","metier":"Épicerie bio","ville":"BOUFFERE"},{"cat":"GASTRONOMIE","nom":"Cave des Rochettes","metier":"Caviste","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"Doussain Boulangerie","metier":"Boulangerie","ville":"ST GEORGES DE MONTAIGU"},{"cat":"GASTRONOMIE","nom":"L'Entremousse","metier":"Bar","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"L'Entrepôtes","metier":"Bar","ville":"ST HILAIRE DE LOULAY"},{"cat":"GASTRONOMIE","nom":"La Bretonnière","metier":"Restaurant","ville":"BOUFFERE"},{"cat":"GASTRONOMIE","nom":"La Digue","metier":"Restaurant","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"La Robe","metier":"Restaurant","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"Le Comptoir de la Digue","metier":"Épicerie fine","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"Le Patati Patata","metier":"Bar","ville":"BOUFFERE"},{"cat":"GASTRONOMIE","nom":"La Taverne","metier":"Restaurant","ville":"BOUFFERE"},{"cat":"GASTRONOMIE","nom":"Le Petit Pétrin","metier":"Boulangerie — Pâtisserie","ville":"LA GUYONNIERE"},{"cat":"GASTRONOMIE","nom":"Les Vergers du Lac","metier":"Fruits & légumes, jus","ville":"LA GUYONNIERE"},{"cat":"GASTRONOMIE","nom":"Maison Robin","metier":"Boulangerie — Chocolatier","ville":"MONTAIGU"},{"cat":"GASTRONOMIE","nom":"Proxi Boufféré","metier":"Traiteur","ville":"BOUFFERE"},{"cat":"GASTRONOMIE","nom":"Proxi La Guyonnière","metier":"Traiteur","ville":"LA GUYONNIERE"},{"cat":"GASTRONOMIE","nom":"Ratoke","metier":"Bar","ville":"ST HILAIRE DE LOULAY"},{"cat":"GASTRONOMIE","nom":"Smiley Kebab","metier":"Restaurant","ville":"BOUFFERE"},{"cat":"GRANDE DISTRIBUTION","nom":"Diagonal","metier":"Grande distribution","ville":"ST HILAIRE DE LOULAY"},{"cat":"GRANDE DISTRIBUTION","nom":"Intermarché","metier":"Grande distribution","ville":"ST HILAIRE DE LOULAY"},{"cat":"GRANDE DISTRIBUTION","nom":"Leclerc","metier":"Grande distribution","ville":"MONTAIGU"},{"cat":"GRANDE DISTRIBUTION","nom":"Super U — Codim","metier":"Grande distribution","ville":"BOUFFERE"},{"cat":"LOISIRS","nom":"Dynamite Games","metier":"Jeux vidéo","ville":"MONTAIGU"},{"cat":"LOISIRS","nom":"Endur'Cycles","metier":"Vélos — Réparation","ville":"BOUFFERE"},{"cat":"LOISIRS","nom":"GFitWellness","metier":"Sport & coaching","ville":"MONTAIGU"},{"cat":"LOISIRS","nom":"King Jouet","metier":"Jeux & jouets","ville":"BOUFFERE"},{"cat":"LOISIRS","nom":"Maison de la Presse","metier":"Presse & culture","ville":"MONTAIGU"},{"cat":"LOISIRS","nom":"Matou Concept Store","metier":"Déco & jouets enfants","ville":"MONTAIGU"},{"cat":"MAISON","nom":"Centrakor / Litrimarche","metier":"Décoration & équipement","ville":"MONTAIGU"},{"cat":"MAISON","nom":"Choses et Cie","metier":"Décoration","ville":"MONTAIGU"},{"cat":"MAISON","nom":"Créa4Mains","metier":"Mercerie","ville":"ST GEORGES DE MONTAIGU"},{"cat":"MAISON","nom":"Darty — G3BP","metier":"Électroménager","ville":"BOUFFERE"},{"cat":"MAISON","nom":"Fleurs d'Ange","metier":"Fleuriste","ville":"ST HILAIRE DE LOULAY"},{"cat":"MAISON","nom":"Hyperburo","metier":"Équipement maison","ville":"MONTAIGU"},{"cat":"MAISON","nom":"Ideorama","metier":"Mobilier","ville":"ST HILAIRE DE LOULAY"},{"cat":"MAISON","nom":"Maison Gobin","metier":"Équipement","ville":"MONTAIGU"},{"cat":"MAISON","nom":"Vincent Décor","metier":"Décoration & peinture","ville":"LA GUYONNIERE"},{"cat":"MODE","nom":"Arnaud","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Bijouterie Perraud","metier":"Bijoux","ville":"MONTAIGU"},{"cat":"MODE","nom":"Célio","metier":"Prêt-à-porter","ville":"BOUFFERE"},{"cat":"MODE","nom":"Clara Chausseur","metier":"Chaussures","ville":"MONTAIGU"},{"cat":"MODE","nom":"Créativ Mode","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Fabrik by Look","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Faubourg 47","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Grain de Malice","metier":"Prêt-à-porter","ville":"BOUFFERE"},{"cat":"MODE","nom":"Intim Lingerie","metier":"Lingerie","ville":"MONTAIGU"},{"cat":"MODE","nom":"Intersport","metier":"Sport & outdoor","ville":"BOUFFERE"},{"cat":"MODE","nom":"Kiabi — Vekia","metier":"Prêt-à-porter","ville":"BOUFFERE"},{"cat":"MODE","nom":"Ma Boutik","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Mlle Cabestan","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"MODE","nom":"Histoire d'Or","metier":"Bijoux","ville":"BOUFFERE"},{"cat":"MODE","nom":"Optic 2000 — Leclerc","metier":"Opticien","ville":"MONTAIGU"},{"cat":"MODE","nom":"Optic 2000 — G. Clemenceau","metier":"Opticien","ville":"MONTAIGU"},{"cat":"MODE","nom":"Optique Garreau","metier":"Opticien","ville":"MONTAIGU"},{"cat":"MODE","nom":"Signature","metier":"Chaussures","ville":"MONTAIGU"},{"cat":"MODE","nom":"Square Accessoires","metier":"Maroquinerie & bijoux","ville":"MONTAIGU"},{"cat":"MODE","nom":"Zateen Bohème","metier":"Prêt-à-porter","ville":"MONTAIGU"},{"cat":"SERVICES","nom":"Brico Cash","metier":"Bricolage","ville":"ST HILAIRE DE LOULAY"},{"cat":"SERVICES","nom":"Clopinette — Cinataypha","metier":"Cigarette électronique","ville":"MONTAIGU"},{"cat":"SERVICES","nom":"Clopinette — Philophone","metier":"Cigarette électronique","ville":"MONTAIGU"},{"cat":"SERVICES","nom":"David Services","metier":"Entretien maison","ville":"ST HILAIRE DE LOULAY"},{"cat":"SERVICES","nom":"G Segura Conseil","metier":"Conseil en image","ville":"LA GUYONNIERE"},{"cat":"SERVICES","nom":"Garage Le Loulay","metier":"Automobile","ville":"ST HILAIRE DE LOULAY"},{"cat":"SERVICES","nom":"Jardivert","metier":"Entretien maison","ville":"ST HILAIRE DE LOULAY"},{"cat":"SERVICES","nom":"Fleurs Passionnelles","metier":"Fleuriste","ville":"BOUFFERE"},{"cat":"SERVICES","nom":"Desjardins","metier":"Entretien maison","ville":"ST HILAIRE DE LOULAY"},{"cat":"SERVICES","nom":"Pacific Auto","metier":"Automobile","ville":"BOUFFERE"},{"cat":"SERVICES","nom":"Pressing Relet Catherine","metier":"Pressing & couture","ville":"BOUFFERE"}]
+</script>
+
+<script>
+const DATA = JSON.parse(document.getElementById('d-raw').textContent);
+
+const CAT_META = {
+  'DETENTE, SOINS ET BEAUTE': {label:'Détente & Beauté', cls:'beaute'},
+  'GASTRONOMIE':              {label:'Gastronomie',      cls:'gastro'},
+  'GRANDE DISTRIBUTION':      {label:'Grande Distrib.',  cls:'distrib'},
+  'LOISIRS':                  {label:'Loisirs',          cls:'loisirs'},
+  'MAISON':                   {label:'Maison',           cls:'maison'},
+  'MODE':                     {label:'Mode',             cls:'mode'},
+  'SERVICES':                 {label:'Services',         cls:'services'},
+};
+
+const VILLE_META = {
+  'MONTAIGU':              {label:'Montaigu-Vendée', cls:'montaigu'},
+  'BOUFFERE':              {label:'Boufféré',        cls:'bouffere'},
+  'ST GEORGES DE MONTAIGU':{label:'St-Georges',      cls:'stgeorges'},
+  'ST HILAIRE DE LOULAY':  {label:'St-Hilaire',      cls:'sthilaire'},
+  'LA GUYONNIERE':         {label:'La Guyonnière',   cls:'laguyonniere'},
+};
+
+const CATS   = Object.keys(CAT_META);
+const VILLES = Object.keys(VILLE_META);
+
+let activeCat   = 'all';
+let activeVille = 'all';
+
+// — Build drawer pills —
+function buildDrawer() {
+  const dc = document.getElementById('d-cats');
+  const dv = document.getElementById('d-villes');
+
+  const allCat = mkPill('Toutes', 'all', activeCat==='all', false, ()=>setCat('all'));
+  dc.appendChild(allCat);
+  CATS.forEach(cat => {
+    const n = DATA.filter(r=>r.cat===cat).length;
+    const p = mkPill(CAT_META[cat].label, cat, activeCat===cat, false, ()=>setCat(cat), n);
+    dc.appendChild(p);
+  });
+
+  const allVille = mkPill('Toutes', 'all', activeVille==='all', true, ()=>setVille('all'));
+  dv.appendChild(allVille);
+  VILLES.forEach(v => {
+    const n = DATA.filter(r=>r.ville===v).length;
+    const p = mkPill(VILLE_META[v].label, v, activeVille===v, true, ()=>setVille(v), n);
+    dv.appendChild(p);
+  });
+}
+
+function mkPill(label, key, active, isVille, cb, count) {
+  const btn = document.createElement('button');
+  btn.className = 'dpill' + (active ? ' active'+(isVille?' ville':'') : '');
+  btn.dataset.key = key;
+  btn.innerHTML = label + (count!=null ? `<span class="dpill-cnt">${count}</span>` : '');
+  btn.onclick = cb;
+  return btn;
+}
+
+function setCat(cat) {
+  activeCat = cat;
+  document.querySelectorAll('#d-cats .dpill').forEach(b => {
+    b.className = 'dpill' + (b.dataset.key===cat ? ' active' : '');
+  });
+  updateFilterBtn();
+  render();
+}
+
+function setVille(ville) {
+  activeVille = ville;
+  document.querySelectorAll('#d-villes .dpill').forEach(b => {
+    b.className = 'dpill' + (b.dataset.key===ville ? ' active ville' : '');
+  });
+  updateFilterBtn();
+  render();
+}
+
+function resetFilters() {
+  setCat('all');
+  setVille('all');
+  document.getElementById('search').value = '';
+  render();
+}
+
+function updateFilterBtn() {
+  const btn = document.getElementById('filter-btn');
+  const hasActive = activeCat !== 'all' || activeVille !== 'all';
+  btn.classList.toggle('has-active', hasActive);
+}
+
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  updateApplyBtn();
+}
+
+function updateApplyBtn() {
+  const filtered = getFiltered();
+  const btn = document.getElementById('btn-apply');
+  btn.textContent = `Voir les ${filtered.length} commerce${filtered.length>1?'s':''}`;
+}
+
+// — Sticky topbar shadow —
+window.addEventListener('scroll', () => {
+  document.getElementById('topbar').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// — Filter logic —
+function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+function getFiltered() {
+  const q = norm(document.getElementById('search').value);
+  return DATA.filter(r => {
+    if (activeCat !== 'all' && r.cat !== activeCat) return false;
+    if (activeVille !== 'all' && r.ville !== activeVille) return false;
+    if (q && !norm(r.nom).includes(q) && !norm(r.metier).includes(q) && !norm(VILLE_META[r.ville]?.label||r.ville).includes(q)) return false;
+    return true;
+  });
+}
+
+// — Render —
+function render() {
+  const data = getFiltered();
+  const listEl = document.getElementById('list');
+  const emptyEl = document.getElementById('empty');
+  const countEl = document.getElementById('count-lbl');
+
+  updateApplyBtn();
+
+  if (!data.length) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    countEl.innerHTML = '';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  countEl.innerHTML = `<strong>${data.length}</strong> commerce${data.length>1?'s':''}`;
+
+  // Group by cat
+  const grouped = {};
+  data.forEach(r => {
+    if (!grouped[r.cat]) grouped[r.cat] = [];
+    grouped[r.cat].push(r);
+  });
+
+  let html = '';
+  let delay = 0;
+  Object.entries(grouped).forEach(([cat, items]) => {
+    const m = CAT_META[cat] || {label:cat, cls:'services'};
+    html += `<div class="cat-group" style="animation-delay:${delay}ms">`;
+    html += `<div class="cat-header">
+      <div class="cat-dot dot-${m.cls}"></div>
+      <div class="cat-lbl">${m.label}</div>
+      <div class="cat-n">${items.length}</div>
+    </div>`;
+    html += `<div class="cards">`;
+    items.forEach((r, i) => {
+      const vm = VILLE_META[r.ville] || {label:r.ville, cls:'montaigu'};
+      html += `<div class="card ac-${m.cls}" style="animation-delay:${delay+i*30}ms">
+        <div class="card-body">
+          <div class="card-name">${r.nom}</div>
+          <div class="card-metier">${r.metier}</div>
+        </div>
+        <div class="card-ville vt-${vm.cls}">${vm.label}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+    delay += 40;
+  });
+
+  listEl.innerHTML = html;
+}
+
+buildDrawer();
+render();
+</script>
+</body>
+</html>
